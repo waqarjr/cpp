@@ -1,80 +1,86 @@
 #include <iostream>
-#include <string>
 using namespace std;
 
-class Event
-{
-private:
-    int eventId;
-    string eventType;
-    string eventName;
+// Abstract Base Class
+class LibraryMember {
+protected:
+    int memberId;
+    string memberName;
+    double membershipFee;
 
 public:
-    Event() {
-        eventId = 0;
-        eventType = "";
-        eventName = "";
-    }
+    LibraryMember(int id, string name) : memberId(id), memberName(name), membershipFee(0.0) {}
 
-    Event(int id, string type, string name) {
-        eventId = id;
-        eventType = type;
-        eventName = name;
-    }
+    virtual void calculateMembershipFee() = 0;   // Pure virtual
+    virtual void displayDetails() const = 0;     // Pure virtual
 
-    Event(const Event &e) {
-        eventId = e.eventId;
-        eventType = e.eventType;
-        eventName = e.eventName;
-    }
-
-    void setEventId(int id) {
-        eventId = id;
-    }
-
-    void setEventType(string type) {
-        eventType = type;
-    }
-
-    void setEventName(string name) {
-        eventName = name;
-    }
-
-    int getEventId() const {
-        return eventId;
-    }
-    string getEventType() const {
-        return eventType;
-    }
-
-    string getEventName() const {
-        return eventName;
-    }
-
-    void display() const {
-        cout << "Event ID: " << eventId;
-        cout << "\nEvent Type: " << eventType;
-        cout << "\nEvent Name: " << eventName << "\n";
-    }
 };
+
+// Student Member Class
+class StudentMember : public LibraryMember {
+private:
+    double baseFee;
+    double discount;
+
+public:
+    StudentMember(int id, string name, double baseFee, double discount)
+        : LibraryMember(id, name), baseFee(baseFee), discount(discount) {}
+
+    void calculateMembershipFee() override {
+        membershipFee = baseFee - discount;
+    }
+
+    void displayDetails() const override {
+        cout << "\nStudent Member Details:\n";
+        cout << "ID: " << memberId << "\nName: " << memberName << endl;
+        cout << "Base Fee: " << baseFee << "\nDiscount: " << discount << endl;
+        cout << "Final Membership Fee: " << membershipFee << endl;
+    }
+
+};
+
+// Faculty Member Class
+class FacultyMember : public LibraryMember {
+private:
+    double baseFee;
+    double facilityFee;
+
+public:
+    FacultyMember(int id, string name, double baseFee, double facilityFee)
+        : LibraryMember(id, name), baseFee(baseFee), facilityFee(facilityFee) {}
+
+    void calculateMembershipFee() override {
+        membershipFee = baseFee + facilityFee;
+    }
+
+    void displayDetails() const override {
+        cout << "\nFaculty Member Details:\n";
+        cout << "ID: " << memberId << "\nName: " << memberName << endl;
+        cout << "Base Fee: " << baseFee << "\nFacility Fee: " << facilityFee << endl;
+        cout << "Final Membership Fee: " << membershipFee << endl;
+    }
+
+};
+
+// Main Function
 int main() {
-    Event event1(101, "Conference", "Tech Innovations");
+    // Create dynamic array of base class pointers
+    LibraryMember* members[2];
 
-    Event event2 = event1;
+    // Create StudentMember and FacultyMember objects
+    members[0] = new StudentMember(1, "Ali", 5000, 1000);
+    members[1] = new FacultyMember(2, "Dr. Ahmed", 7000, 2000);
 
-    Event event3;
-    event3.setEventId(202);
-    event3.setEventType("Corporate Party");
-    event3.setEventName("Annual Celebration");
+    // Polymorphic behavior
+    for (int i = 0; i < 2; i++) {
+        members[i]->calculateMembershipFee();
+        members[i]->displayDetails();
+    }
 
-    cout << "Event 1 Details:\n";
-    event1.display();
-    cout << "\nEvent 2 (Copied from Event 1):\n";
-    event2.display();
+    // Clean up
+    for (int i = 0; i < 2; i++) {
+        delete members[i];
+    }
 
-    cout << "\nAccessing Event 3 details using getters:\n";
-    cout << "Event ID: " << event3.getEventId() << endl;
-    cout << "Event Type: " << event3.getEventType() << endl;
-    cout << " Event Name : " << event3.getEventName() << endl;
-        return 0;
+    return 0;
 }

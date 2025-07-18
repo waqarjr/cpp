@@ -25,8 +25,8 @@ public:
         this->subject = subject;
         this->department = department;
     }
-   // copy constructor
-    Teacher (const Teacher &t) {
+   //custom  copy constructor
+    Teacher ( Teacher &t) {
         cout << "Copy constructor called" << endl;
         this->name = t.name;
         this->subject = t.subject;
@@ -78,7 +78,7 @@ public:
 int main() {
     Teacher t1("John Doe", "Mathematics", "Science");
     // t1.getInfo();
-    Teacher t2(t1);
+    Teacher t2(t1); // this will create copy Auto, but we can create our own custom constructor too.
     t2.getInfo();
     // t1.name = "John Doe"; 
     // t1.subject = "Mathematics";
